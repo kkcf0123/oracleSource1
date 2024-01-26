@@ -241,3 +241,323 @@ AND e.salary < e2.salary
 AND e.hire_date < e2.hire_date;
 
 -- ----------------------------------------------------------------
+
+select DEPARTMENT_ID , LAST_NAME  from EMPLOYEES e WHERE DEPARTMENT_ID IN (select DISTINCT DEPARTMENT_ID  from EMPLOYEES e WHERE last_name LIKE '%U%') ORDER BY e.EMPLOYEE_ID ;
+
+SELECT
+	e.EMPLOYEE_ID ,
+	e.JOB_ID 
+FROM
+	EMPLOYEES e
+WHERE
+	(e.EMPLOYEE_ID,
+	e.JOB_ID) IN (
+	SELECT
+		jh.employee_id,
+		jh.job_id
+	FROM
+		JOB_HISTORY jh)
+	ORDER BY e.EMPLOYEE_ID ASC ;
+
+-- --------------------------------------------------------------
+SELECT
+	e.job_id,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 10 AND e.JOB_ID = e2.job_id) AS d10,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 20 AND e.JOB_ID = e2.job_id) AS d20,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 30 AND e.JOB_ID = e2.job_id) as d30,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 40 AND e.JOB_ID = e2.job_id) as d40,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 50 AND e.JOB_ID = e2.job_id) AS d50,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 60 AND e.JOB_ID = e2.job_id) AS d60,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 70 AND e.JOB_ID = e2.job_id) AS d70,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 80 AND e.JOB_ID = e2.job_id) AS d80,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 90 AND e.JOB_ID = e2.job_id) AS d90,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 100 AND e.JOB_ID = e2.job_id) AS d100,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		 e2.department_id = 110 AND e.JOB_ID = e2.job_id) AS d110,
+	(
+	SELECT
+		SUM(e2.SALARY) 
+	FROM
+		EMPLOYEES e2 
+	WHERE
+		  e.JOB_ID = e2.job_id) AS total
+FROM
+	EMPLOYEES e 
+GROUP BY e.JOB_ID
+ORDER BY e.JOB_ID ;
+
+
+-- --------------------------------------------------------------------------------
+
+SELECT
+	e.LAST_NAME,
+	e.JOB_ID,
+	e.SALARY
+FROM
+	EMPLOYEES e
+WHERE
+	SALARY > (
+	SELECT
+		max(e2.salary)
+	FROM
+		EMPLOYEES e2
+	WHERE
+		JOB_ID = 'SA_MAN');
+
+-- ----------------------------------------------------------------------------
+
+SELECT
+	LAST_NAME ,
+	DEPARTMENT_ID,
+	SALARY
+FROM
+	EMPLOYEES e
+WHERE
+	(e.DEPARTMENT_ID ,
+	SALARY ) IN (
+	SELECT
+		DEPARTMENT_ID ,
+		SALARY
+	FROM
+		EMPLOYEES e
+	WHERE
+		COMMISSION_PCT IS NOT NULL );
+
+-- ----------------------------------------------------------------------------
+SELECT
+	EMPLOYEE_ID ,
+	LAST_NAME ,
+	SALARY
+FROM
+	EMPLOYEES e
+WHERE
+	DEPARTMENT_ID IN (
+	SELECT
+		DISTINCT DEPARTMENT_ID
+	FROM
+		EMPLOYEES e
+	WHERE
+		SALARY > (
+		SELECT
+			avg(e.SALARY)
+		FROM
+			EMPLOYEES e)
+		AND LAST_NAME LIKE '%u%');
+	
+-- ----------------------------------------------------------------------------
+SELECT
+	LAST_NAME ,
+	E1.DEPARTMENT_ID ,
+	SALARY ,
+	E2.deptSALAVG
+FROM
+	EMPLOYEES E1,
+	(
+	SELECT
+		DEPARTMENT_ID ,
+		AVG(SALARY) AS deptSALAVG
+	FROM
+		EMPLOYEES e
+	GROUP BY
+		DEPARTMENT_ID) E2
+WHERE
+	E1.DEPARTMENT_ID = E2.DEPARTMENT_ID
+	AND E1.SALARY > E2.deptSALAVG
+ORDER BY
+	DEPARTMENT_ID ;
+	
+	
+-- ----------------------------------------------------------------------------
+SELECT
+	LAST_NAME ,
+	HIRE_DATE
+FROM
+	EMPLOYEES e
+WHERE
+	HIRE_DATE > (
+	SELECT
+		HIRE_DATE
+	FROM
+		EMPLOYEES e
+	WHERE
+		LAST_NAME = 'Davies')
+	
+	
+SELECT
+	LAST_NAME ,
+	salary
+FROM
+	EMPLOYEES e
+WHERE
+	MANAGER_ID IN (
+	SELECT
+		EMPLOYEE_ID
+	FROM
+		EMPLOYEES e
+	WHERE
+		LAST_NAME = 'King')
+	
+-- ----------------------------------------------------------------------------
+SELECT
+	LAST_NAME,
+	DEPARTMENT_ID ,
+	SALARY
+FROM
+	EMPLOYEES e 
+	WHERE (SALARY , NVL(COMMISSION_PCT, 0)) IN  (
+	SELECT
+		SALARY ,
+		NVL(COMMISSION_PCT, 0)
+	FROM
+		EMPLOYEES e
+	WHERE
+		LAST_NAME = 'Kochhar')AND e.LAST_NAME != 'Kochhar';
+		
+-- ----------------------------------------------------------------------------
+SELECT
+	COUNTRY_ID ,
+	COUNTRY_NAME
+FROM
+	COUNTRIES c
+WHERE
+	c.COUNTRY_ID IN (
+	SELECT
+		l.COUNTRY_ID
+	FROM
+		LOCATIONS l ,
+		(
+		SELECT
+			LOCATION_ID
+		FROM
+			DEPARTMENTS d ) D
+	WHERE
+		l.LOCATION_ID = d.location_id);
+-- ----------------------------------------------------------------------------
+
+SELECT
+	 DISTINCT TO_CHAR(HIRE_DATE, 'YYYY') AS HIRE_DATE ,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES ) AS allemployees,
+	(SELECT count(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YYYY') = '2013') AS y2013,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YYYY') = '2014') AS y2014,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YYYY') = '2015') AS y2015,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YYYY') = '2016') AS y2016
+FROM
+	EMPLOYEES e 
+GROUP BY HIRE_DATE 
+ORDER BY HIRE_DATE ;
+
+
+select * from EMPLOYEES e WHERE HIRE_DATE LIKE '%13';
+
+select * from EMPLOYEES e WHERE HIRE_DATE LIKE '13%';
+
+select * from EMPLOYEES e WHERE HIRE_DATE LIKE '%13%';
+-- ----------------------------------------------------------------------------
+SELECT
+	COUNT(employee_id) AS allm,
+	(SELECT count(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YY') = '13') AS y2013,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YY') = '14') AS y2014,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YY') = '15') AS y2015,
+	(SELECT COUNT(EMPLOYEE_ID) FROM EMPLOYEES WHERE TO_CHAR(HIRE_DATE, 'YY') = '16') AS y2016
+FROM EMPLOYEES e ;
+
+
+-- ----------------------------------------------------------------------------
+
+SELECT
+	EMPLOYEE_ID ,
+	FIRST_NAME || ' ' || LAST_NAME AS name,
+	DEPARTMENT_ID ,
+	SALARY
+FROM
+	EMPLOYEES e
+WHERE(SALARY, NVL(COMMISSION_PCT, 0)) IN 
+	(
+	SELECT
+		SALARY ,
+		NVL(COMMISSION_PCT, 0)
+	FROM
+		EMPLOYEES e
+	WHERE
+		DEPARTMENT_ID IN (
+		SELECT
+			DEPARTMENT_ID
+		FROM
+			DEPARTMENTS d
+		WHERE
+			d.location_id = 1700));
+
+
+
+
+
+
+
+
+
+
